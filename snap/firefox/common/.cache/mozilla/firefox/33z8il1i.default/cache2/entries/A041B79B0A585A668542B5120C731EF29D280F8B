@@ -1,0 +1,413 @@
+//
+// MoinMoin commonly used JavaScript functions
+//
+
+// We keep here the state of the search box
+searchIsDisabled = false;
+
+function searchChange(e) {
+    // Update search buttons status according to search box content.
+    // Ignore empty or whitespace search term.
+    var value = e.value.replace(/\s+/, '');
+    if (value == '' || searchIsDisabled) { 
+        searchSetDisabled(true);
+    } else {
+        searchSetDisabled(false);
+    }
+}
+
+function searchSetDisabled(flag) {
+    // Enable or disable search
+    document.getElementById('fullsearch').disabled = flag;
+    document.getElementById('titlesearch').disabled = flag;
+}
+
+function searchFocus(e) {
+    // Update search input content on focus
+    if (e.value == search_hint) {
+        e.value = '';
+        e.className = '';
+        searchIsDisabled = false;
+    }
+}
+
+function searchBlur(e) {
+    // Update search input content on blur
+    if (e.value == '') {
+        e.value = search_hint;
+        e.className = 'disabled';
+        searchIsDisabled = true;
+    }
+}
+
+function actionsMenuInit(title) {
+    // Initialize action menu
+    for (i = 0; i < document.forms.length; i++) {
+        var form = document.forms[i];
+        if (form.className == 'actionsmenu') {
+            // Check if this form needs update
+            var div = form.getElementsByTagName('div')[0];
+            var label = div.getElementsByTagName('label')[0];
+            if (label) {
+                // This is the first time: remove label and do buton.
+                div.removeChild(label);
+                var dobutton = div.getElementsByTagName('input')[0];
+                div.removeChild(dobutton);
+                // and add menu title
+                var select = div.getElementsByTagName('select')[0];
+                var item = document.createElement('option');
+                item.appendChild(document.createTextNode(title));
+                item.value = 'show';
+                select.insertBefore(item, select.options[0]);
+                select.selectedIndex = 0;
+            }
+        }
+    }
+}
+
+// use this instead of assigning to window.onload directly:
+function addLoadEvent(func) {
+    // alert("addLoadEvent " + func)
+    var oldonload = window.onload;
+    if (typeof window.onload != 'function') {
+        window.onload = func;
+    } else {
+        window.onload = function() {
+            oldonload();
+            func();
+        }
+    }
+}
+
+// copy from fckeditor browser check code (fckeditor.js:298, function : FCKeditor_IsCompatibleBrowser)
+function can_use_gui_editor() {
+    var sAgent = navigator.userAgent.toLowerCase() ;
+
+    // Internet Explorer 5.5+
+    if ( /*@cc_on!@*/false && sAgent.indexOf("mac") == -1 )
+    {
+        var sBrowserVersion = navigator.appVersion.match(/MSIE (.\..)/)[1] ;
+        return ( sBrowserVersion >= 5.5 ) ;
+    }
+
+    // Gecko (Opera 9 tries to behave like Gecko at this point).
+    if ( navigator.product == "Gecko" && navigator.productSub >= 20030210 && !( typeof(opera) == 'object' && opera.postError ) )
+        return true ;
+
+    // Opera 9.50+
+    if ( window.opera && window.opera.version && parseFloat( window.opera.version() ) >= 9.5 )
+        return true ;
+
+/*
+  // disable safari : until fck devteam fix http://dev.fckeditor.net/ticket/2333
+  
+    // Adobe AIR
+    // Checked before Safari because AIR have the WebKit rich text editor
+    // features from Safari 3.0.4, but the version reported is 420.
+    if ( sAgent.indexOf( ' adobeair/' ) != -1 )
+        return ( sAgent.match( / adobeair\/(\d+)/ )[1] >= 1 ) ; // Build must be at least v1
+
+    // Safari 3+
+    if ( sAgent.indexOf( ' applewebkit/' ) != -1 )
+        return ( sAgent.match( / applewebkit\/(\d+)/ )[1] >= 522 ) ;    // Build must be at least 522 (v3)
+*/
+    return false ;
+
+}
+
+
+function update_edit_links() {
+    // Update editlink according if if the browser is compatible
+    if (can_use_gui_editor() == false){
+        //alert("update_edit_links: can't use gui editor");
+        return;
+    }
+    var editlinks = document.getElementsByName("editlink");
+    for (i = 0; i < editlinks.length; i++) {
+        var link = editlinks[i];
+        href = link.href.replace('editor=textonly','editor=guipossible');
+        link.href = href;
+        //alert("update_edit_links: modified to guipossible");
+    }
+}
+
+
+function add_gui_editor_links() {
+    // Add gui editor link after the text editor link
+    
+    // If the variable is not set or browser is not compatible, exit
+    try {gui_editor_link_href}
+    catch (e) {
+        //alert("add_gui_editor_links: gui_editor_link_href not here");
+        return
+    }
+    if (can_use_gui_editor() == false){
+        //alert("add_gui_editor_links: can't use gui_editor");
+        return;
+    }
+    var all = document.getElementsByName('texteditlink');
+    for (i = 0; i < all.length; i++) {
+        var textEditorLink = all[i];
+        // Create a list item with a link
+        var guiEditorLink = document.createElement('a');
+        guiEditorLink.href = gui_editor_link_href;
+        var text = document.createTextNode(gui_editor_link_text);
+        guiEditorLink.appendChild(text);
+        var listItem = document.createElement('li')
+        listItem.appendChild(guiEditorLink);
+        // Insert in the editbar
+        var editbar = textEditorLink.parentNode.parentNode
+        var nextListItem = textEditorLink.parentNode.nextSibling;
+        editbar.insertBefore(listItem, nextListItem);
+        //alert("add_gui_editor_links: added gui editor link");
+    }
+}
+ 
+
+function show_switch2gui() {
+    // Show switch to gui editor link if the browser is compatible
+    if (can_use_gui_editor() == false) return;
+    
+    var switch2gui = document.getElementById('switch2gui')
+    if (switch2gui) {
+        switch2gui.style.display = 'inline';
+    }
+}
+
+// for long documents with many comments this is expensive to calculate,
+// thus we keep it here:
+comments = null;
+
+function toggleComments() {
+    // Toggle visibility of every tag with class "comment"
+    for (i = 0; i < comments.length; i++){
+        el = comments[i];
+        if ( el.style.display != 'none' ) {
+            el.style.display = 'none';
+        } else {
+            el.style.display = '';
+        }
+    }
+}
+
+function show_toggleComments() {
+    // Show edit bar item for toggling inline comments on/off only if inline comments exist on the page
+    comments = getElementsByClassName('comment', null, document);
+    if (comments.length > 0) {
+        var buttons = getElementsByClassName('toggleCommentsButton', null, document);
+        for (i = 0; i < buttons.length; i++){
+            el = buttons[i];
+            el.style.display = '';
+        }
+    }
+}
+
+
+function load() {
+    // Do not name this "onload", it does not work with IE :-)
+    // TODO: create separate onload for each type of view and set the
+    // correct function name in the html. 
+    // e.g <body onlod='editor_onload()'>
+
+    // login focus
+    if (document.forms['loginform']) {
+        document.forms['loginform'].elements['name'].focus();
+    }
+    
+    // Page view stuff
+    update_edit_links();
+    add_gui_editor_links();
+    
+    // Editor stuff
+    show_switch2gui();
+
+    // Enable menu item "ToggleComments" if inline comments exist
+    show_toggleComments();
+ 
+    // data browser widget
+    dbw_hide_buttons();
+}
+
+
+function before_unload(evt) {
+    // TODO: Better to set this in the editor html, as it does not make
+    // sense elsehwere.
+    // confirmleaving is available when editing
+    try {return confirmleaving();}
+    catch (e) {}
+}
+
+// Initialize after loading the page
+addLoadEvent(load)
+
+// Catch before unloading the page
+window.onbeforeunload = before_unload
+
+function dbw_update_search(dbw_id)
+{
+    var table = document.getElementById(dbw_id+'table');
+    var cell;
+    var shown;
+    var i
+    var cols = table.rows[0].cells.length;
+    var filter = new Array();
+    var dofilter = new Array();
+    var form = document.forms[dbw_id+'form'];
+
+    for (i = 0; i < cols; i++) {
+        dofilter[i] = false;
+        if (form[dbw_id+'filter'+i]) {
+            dofilter[i] = true;
+            filter[i] = form[dbw_id+'filter'+i].value;
+            if (filter[i] == '[all]')
+                dofilter[i] = false;
+            if (filter[i] == '[empty]')
+                filter[i] = '';
+        }
+    }
+
+    for (i = 1; i < table.rows.length; i++) {
+        var show = true;
+        for (col = 0; col < cols; col++) {
+            if (!dofilter[col])
+                continue;
+
+            cell = table.rows[i].cells[col];
+
+            if (filter[col] == '[notempty]') {
+                if (cell.abbr == '') {
+                    show = false;
+                    break;
+                }
+            } else if (filter[col] != cell.abbr) {
+                show = false;
+                break;
+            }
+        }
+        if (show)
+            table.rows[i].style.display = '';
+        else
+            table.rows[i].style.display = 'none';
+    }
+}
+
+function dbw_hide_buttons() {
+    var form;
+    var elem;
+    var name;
+
+    for (var fidx = 0; fidx < document.forms.length; fidx++) {
+        form = document.forms[fidx];
+        for (var eidx = 0; eidx < form.elements.length; eidx++) {
+            elem = form.elements[eidx];
+            name = elem.name;
+            if (name) {
+                if (name.indexOf('dbw.') >= 0 && name.substr(-7) == '.submit')
+                    elem.style.display = 'none';
+            }
+        }
+    }
+}
+
+/*  getElementsByClassName
+    Developed by Robert Nyman, http://www.robertnyman.com
+    Code/licensing: http://code.google.com/p/getelementsbyclassname/ (MIT license)
+    Version: 1.0.1
+*/  
+var getElementsByClassName = function (className, tag, elm){
+    if (document.getElementsByClassName) {
+        getElementsByClassName = function (className, tag, elm) {
+            elm = elm || document;
+            var elements = elm.getElementsByClassName(className),
+                nodeName = (tag)? new RegExp("\\b" + tag + "\\b", "i") : null,
+                returnElements = [],
+                current;
+            for(var i=0, il=elements.length; i<il; i+=1){
+                current = elements[i];
+                if(!nodeName || nodeName.test(current.nodeName)) {
+                    returnElements.push(current);
+                }
+            }
+            return returnElements;
+        };
+    }
+    else if (document.evaluate) {
+        getElementsByClassName = function (className, tag, elm) {
+            tag = tag || "*";
+            elm = elm || document;
+            var classes = className.split(" "),
+                classesToCheck = "",
+                xhtmlNamespace = "http://www.w3.org/1999/xhtml",
+                namespaceResolver = (document.documentElement.namespaceURI === xhtmlNamespace)? xhtmlNamespace : null,
+                returnElements = [],
+                elements,
+                node;
+            for(var j=0, jl=classes.length; j<jl; j+=1){
+                classesToCheck += "[contains(concat(' ', @class, ' '), ' " + classes[j] + " ')]";
+            }
+            try {
+                elements = document.evaluate(".//" + tag + classesToCheck, elm, namespaceResolver, 0, null);
+            }
+            catch (e) {
+                elements = document.evaluate(".//" + tag + classesToCheck, elm, null, 0, null);
+            }
+            while ((node = elements.iterateNext())) {
+                returnElements.push(node);
+            }
+            return returnElements;
+        };
+    }
+    else {
+        getElementsByClassName = function (className, tag, elm) {
+            tag = tag || "*";
+            elm = elm || document;
+            var classes = className.split(" "),
+                classesToCheck = [],
+                elements = (tag === "*" && elm.all)? elm.all : elm.getElementsByTagName(tag),
+                current,
+                returnElements = [],
+                match;
+            for(var k=0, kl=classes.length; k<kl; k+=1){
+                classesToCheck.push(new RegExp("(^|\\s)" + classes[k] + "(\\s|$)"));
+            }
+            for(var l=0, ll=elements.length; l<ll; l+=1){
+                current = elements[l];
+                match = false;
+                for(var m=0, ml=classesToCheck.length; m<ml; m+=1){
+                    match = classesToCheck[m].test(current.className);
+                    if (!match) {
+                        break;
+                    }
+                }
+                if (match) {
+                    returnElements.push(current);
+                }
+            }
+            return returnElements;
+        };
+    }
+    return getElementsByClassName(className, tag, elm);
+};
+
+l”c      gé(gé(GÈ§ýg™#¨   c    O^partitionKey=%28https%2Cubuntu.com%29,:https://wiki.ubuntu.com/moin_static198/common/js/common.js necko:classified 1 strongly-framed 1 security-info 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 request-method GET request-User-Agent Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0 request-Accept-Language en-US,en;q=0.5 response-head HTTP/2 200 
+server: nginx/1.14.0 (Ubuntu)
+date: Tue, 21 Jan 2025 18:36:24 GMT
+content-type: application/javascript
+content-length: 12616
+last-modified: Thu, 16 Jun 2011 23:39:12 GMT
+etag: "3148-4a5dcc6b54800"
+vary: Cookie,User-Agent,Accept-Language
+x-cache-status: HIT from content-cache-1ss/1; Anonymous
+accept-ranges: bytes
+X-Firefox-Spdy: h2
+ original-response-headers server: nginx/1.14.0 (Ubuntu)
+date: Tue, 21 Jan 2025 18:36:24 GMT
+content-type: application/javascript
+content-length: 12616
+last-modified: Thu, 16 Jun 2011 23:39:12 GMT
+etag: "3148-4a5dcc6b54800"
+vary: Cookie,User-Agent,Accept-Language
+x-cache-status: HIT from content-cache-1ss/1; Anonymous
+accept-ranges: bytes
+X-Firefox-Spdy: h2
+ ctid 2 uncompressed-len 0 net-response-time-onstart 75 net-response-time-onstop 76   1H

@@ -1,0 +1,13 @@
+9
+^partitionKey=%28https%2Cubuntu.com%29
+https://www.googletagmanager.com/static/service_worker
+https://www.googletagmanager.com/static/service_worker/51n0/sw.js?origin=https%3A%2F%2Fubuntu.com
+false
+{b1387766-918f-40c6-9e0a-ae6ea4d783ce}
+1
+1738428807326670
+1738428807332264
+1738428807143764
+0
+true
+#
