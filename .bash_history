@@ -227,3 +227,88 @@ chmod +x network_report.sh
 ./storage_report.sh
 ./network_report.sh
 sudo reboot
+git branch
+git log --oneline -n 5
+git status
+git add system_report.sh  
+git commit -m "Added my script"
+ls -l system_report.sh
+cd ~/system-report-project
+ls -l system_report.sh
+nano system_report.sh
+cd
+ls
+git status
+git ls-files | grep system_report.sh
+git check-ignore -v system_report.sh
+git log -- system_report.sh
+git ls-remote origin master
+git push origin master
+clear
+git pull origin master
+git log -- system_report.sh
+ls -l  sudo system_report.sh
+git checkout 8b6dd60 -- system_report.sh
+git ls-tree -r 8b6dd60
+git branch -a
+git log --all -- system_report.sh
+git checkout 649a87b -- system_report.sh
+git checkout 649a87b
+clear
+git checkout -- .
+git add .
+git rm --cached system-report-project
+git rm --cached -f system-report-project
+cd system-report-project
+git add system_report.sh
+git commit -m "Removed submodule and added system_report.sh file"
+git push origin master
+git status
+cd
+git ls-files | grep system_report.sh
+git remote -v
+wget -O ~/system_report.sh/makecontainers.sh https://github.com/zonzorp/COMP2137/raw/main/makecontainers.sh && chmod +x ~/ system_report.sh/makecontainers.sh
+wget -O ~/system_report.sh/makecontainers.sh https://github.com/zonzorp/COMP2137/raw/main/makecontainers.sh && chmod +x ~/system_report.sh/makecontainers.sh
+clear
+mkdir -p ~/system_report.sh
+ls
+cd ~/COMP2137
+ls -a
+cd
+mkdir -p ~/COMP2137/scripts
+wget -O ~/COMP2137/scripts/makecontainers.sh https://github.com/zonzorp/COMP2137/raw/main/makecontainers.sh && chmod +x ~/COMP2137/scripts/makecontainers.sh
+ls ~/COMP2137/scripts
+~/COMP2137/scripts/makecontainers.sh --prefix server --count 2 --fresh
+sudo reboot 
+~/COMP2137/scripts/makecontainers.sh --prefix server --count 2 --fresh
+sudo systemctl daemon-reload
+sudo systemctl status ovsdb-server
+docker ps
+journalctl -u server1
+clear
+sudo apt update
+sudo apt install docker.io
+docker --version
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo apt install openvswitch-switch
+sudo systemctl start ovsdb-server
+~/COMP2137/scripts/makecontainers.sh --prefix server --count 2 --fresh
+clear
+sudo systemctl start openvswitch-switch
+sudo systemctl status openvswitch-switch
+sudo ovs-vsctl --no-wait init
+sudo ovs-vsctl show
+[200~~/COMP2137/scripts/makecontainers.sh --prefix server --count 2 --fresh --verbose
+~~/COMP2137/scripts/makecontainers.sh --prefix server --count 2 --fresh --verbose
+~/COMP2137/scripts/makecontainers.sh --prefix server --count 2 --fresh --verbose
+sudo reboot
+./system_report.sh
+git branch
+git checkout main
+sudo reboot
+git branch -a
+git checkout master
+clear
+git checkout -b main
+git push -u origin main
