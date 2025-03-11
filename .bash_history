@@ -312,3 +312,37 @@ git checkout master
 clear
 git checkout -b main
 git push -u origin main
+git branch
+git add system_report.sh
+git commit -m "Added system_report.sh script"
+git push -u origin main
+git fetch origin
+git checkout main
+git merge origin/main
+git merge origin/main --allow-unrelated-histories
+git add system_report.sh
+git commit -m "Added system_report.sh"
+clear
+git add system_report.sh
+git commit -m "Added system_report.sh"
+clear
+git status
+clear
+git add system_report.sh
+git commit -m "Add system_report.sh script back to the repository"
+git add COMP2137
+git commit -m "Re-add COMP2137 file"
+git status
+git commit -a
+git commit -a -m "Add system_report.sh and update related files"
+git push origin main
+git rev-list --objects --all | grep 3e3aa2c681815f1465c08cda287220993955a571
+clear
+git branch
+git branch -a
+git add system_report.sh
+git commit -m "Add changes to system_report.sh"
+git commit -a -m "Add system_report.sh and update related files"
+"git add"
+clear
+sudo reboot
